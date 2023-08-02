@@ -2,7 +2,7 @@
 ## 安装
 
 ~~~
-go get github.com/pkg6/gaiyoudao
+go get github.com/pkg6/go-aiyoudao
 ~~~
 
 ## 基本使用
@@ -10,13 +10,17 @@ go get github.com/pkg6/gaiyoudao
 ~~~
 package main
 
-import "github.com/pkg6/gaiyoudao"
+import (
+	"fmt"
+	"github.com/pkg6/go-aiyoudao"
+)
 
 func main() {
-	youdao := gaiyoudao.NewSingleton("appKey", "appSecret")
-	youdao.WBfy("你好", "zh-CHS", "en")
+	youdao := aiyoudao.NewSingleton("appKey", "appSecret")
+	bfy, err := youdao.WBfy("你好", "zh-CHS", "en")
+	fmt.Println(err)
+	fmt.Println(bfy)
 }
-
 ~~~
 
 ## 功能列表
@@ -27,4 +31,5 @@ func main() {
 | [图片翻译](https://ai.youdao.com/DOCSIRMA/html/trans/api/tpfy/index.html) | TPFy，TPFyForReader，TPFyForFile                             |
 | [文本翻译](https://ai.youdao.com/DOCSIRMA/html/trans/api/wbfy/index.html) | WBfy                                                         |
 | [试卷手写体擦除](https://ai.youdao.com/DOCSIRMA/html/learn/api/sjsxtcc/index.html) | OcrWritingErase，OcrWritingEraseForReader，OcrWritingEraseForFile |
+| [通用OCR](https://ai.youdao.com/DOCSIRMA/html/ocr/api/tyocr/index.html) | TYOcr，TYOcrForReader，TYOcrFile                             |
 

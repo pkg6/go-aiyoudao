@@ -1,27 +1,26 @@
-package gaiyoudao
+package aiyoudao
 
 //https://ai.youdao.com/DOCSIRMA/html/trans/api/plwbfy/index.html
 
+type PLWBfyResponseTranslateResults struct {
+	Query        string `json:"query"`
+	Translation  string `json:"translation"`
+	Type         string `json:"type"`
+	VerifyResult string `json:"verifyResult"`
+}
+
 type PLWBfyResponse struct {
-	TranslateResults []struct {
-		Query        string `json:"query"`
-		Translation  string `json:"translation"`
-		Type         string `json:"type"`
-		VerifyResult string `json:"verifyResult"`
-	} `json:"translateResults"`
-	RequestId string `json:"requestId"`
-	ErrorCode string `json:"errorCode"`
-	L         string `json:"l"`
+	TranslateResults []PLWBfyResponseTranslateResults `json:"translateResults"`
+	RequestId        string                           `json:"requestId"`
+	ErrorCode        string                           `json:"errorCode"`
+	L                string                           `json:"l"`
 }
 
 func (c *Client) PLWBfy(qs []string, from, to string, bodyMaps ...BodyMaps) (resp PLWBfyResponse, err error) {
-	bodyMap := bodyMapsMerge(BodyMaps{
+	err = c.PostForm("v3", "/v2/api", &resp, BodyMaps{
 		"q":    qs,
 		"from": {from},
 		"to":   {to},
 	}, bodyMaps...)
-	if err = c.PostForm("/v2/api", c.BuildRequestBody("v3", bodyMap), &resp); err != nil {
-		return resp, err
-	}
-	return resp, nil
+	return resp, err
 }

@@ -1,12 +1,10 @@
-package gaiyoudao
+package aiyoudao
 
 import (
-	"encoding/base64"
+	"context"
 	"github.com/google/uuid"
-	"github.com/pkg6/go-requests"
-	"io/ioutil"
+	"github.com/zzqqw/gclient"
 	"net/url"
-	"os"
 	"strconv"
 	"sync"
 	"time"
@@ -20,9 +18,9 @@ var (
 
 type (
 	Client struct {
-		AppKey    string
-		AppSecret string
-		Debug     bool
+		AppKey     string
+		AppSecret  string
+		HttpClient *gclient.Client
 	}
 )
 
@@ -34,44 +32,21 @@ func NewSingleton(appKey, appSecret string) *Client {
 }
 
 func New(appKey, appSecret string) *Client {
-	return &Client{AppKey: appKey, AppSecret: appSecret}
-}
-
-func (c *Client) SaveFile(path string, data []byte, needDecode bool) error {
-	file, err := os.OpenFile(path, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
-	if needDecode {
-		data, _ = base64.StdEncoding.DecodeString(string(data))
-	}
-	if err != nil {
-		return err
-	}
-	_, err = file.Write(data)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (c *Client) ReadFileAsBase64(path string) (string, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return "", err
-	}
-	fd, err := ioutil.ReadAll(file)
-	if err != nil {
-		return "", err
-	} else {
-		return base64.StdEncoding.EncodeToString(fd), nil
+	return &Client{
+		AppKey:     appKey,
+		AppSecret:  appSecret,
+		HttpClient: gclient.New(),
 	}
 }
 
-func (c *Client) BuildRequestBody(signType string, bodyMaps BodyMaps) url.Values {
+func (c *Client) PostForm(signType, path string, resp any, defaultBody BodyMaps, otherMaps ...BodyMaps) error {
+	bodyMaps := MergeBodyMaps(defaultBody, otherMaps...)
 	curTime := strconv.FormatInt(time.Now().Unix(), 10)
 	salt := uuid.New().String()
 	var sign string
 	switch signType {
 	case "v4":
-		sign = requests.Sha256(c.AppKey + salt + curTime + c.AppSecret)
+		sign = gclient.Sha256String(c.AppKey + salt + curTime + c.AppSecret)
 	case "v3":
 		qs := bodyMaps["q"]
 		if qs == nil {
@@ -90,7 +65,7 @@ func (c *Client) BuildRequestBody(signType string, bodyMaps BodyMaps) url.Values
 				return string(str[:10]) + strconv.Itoa(strLen) + string(str[strLen-10:])
 			}
 		}
-		sign = requests.Sha256(c.AppKey + inputFun(q) + salt + curTime + c.AppSecret)
+		sign = gclient.Sha256String(c.AppKey + inputFun(q) + salt + curTime + c.AppSecret)
 	}
 	params := url.Values{}
 	for k, v := range bodyMaps {
@@ -103,19 +78,5 @@ func (c *Client) BuildRequestBody(signType string, bodyMaps BodyMaps) url.Values
 	params.Add("curtime", curTime)
 	params.Add("signType", signType)
 	params.Add("sign", sign)
-	return params
-}
-
-func (c *Client) PostForm(path string, body url.Values, resp any) error {
-	response, err := requests.Post(RootURI+path, body, func(client *requests.Client) {
-		client.AsForm()
-		if c.Debug {
-			client.Debug()
-		}
-	})
-	if err != nil {
-		return err
-	}
-	_ = response.Unmarshal(&resp)
-	return nil
+	return c.HttpClient.PostFormUnmarshal(context.Background(), RootURI+path, params, resp)
 }

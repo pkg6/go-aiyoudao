@@ -1,8 +1,8 @@
-package gaiyoudao
+package aiyoudao
 
 type BodyMaps map[string][]string
 
-func bodyMapsMerge(baseBodyMaps BodyMaps, bodyMaps ...BodyMaps) BodyMaps {
+func MergeBodyMaps(baseBodyMaps BodyMaps, bodyMaps ...BodyMaps) BodyMaps {
 	for _, bodyMap := range bodyMaps {
 		for s, strings := range bodyMap {
 			baseBodyMaps[s] = strings
