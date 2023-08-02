@@ -1,4 +1,4 @@
-package gaiyoudao
+package aiyoudao
 
 import (
 	"encoding/base64"
@@ -15,7 +15,7 @@ type OcrWritingEraseResponse struct {
 }
 
 func (c *Client) OcrWritingEraseForFile(file string, bodyMaps ...BodyMaps) (resp OcrWritingEraseResponse, err error) {
-	q, err := c.ReadFileAsBase64(file)
+	q, err := ReadFileAsBase64(file)
 	if err != nil {
 		return resp, err
 	}
@@ -33,11 +33,8 @@ func (c *Client) OcrWritingEraseForReader(reader io.Reader, bodyMaps ...BodyMaps
 // OcrWritingErase
 //试卷手写体擦除
 func (c *Client) OcrWritingErase(q string, bodyMaps ...BodyMaps) (resp OcrWritingEraseResponse, err error) {
-	bodyMap := bodyMapsMerge(BodyMaps{
+	err = c.PostForm("v3", "/ocr_writing_erase", &resp, BodyMaps{
 		"q": {q},
 	}, bodyMaps...)
-	if err = c.PostForm("/ocr_writing_erase", c.BuildRequestBody("v3", bodyMap), &resp); err != nil {
-		return resp, err
-	}
-	return resp, nil
+	return resp, err
 }

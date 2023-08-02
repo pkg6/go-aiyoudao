@@ -1,8 +1,13 @@
 package main
 
-import "github.com/pkg6/gaiyoudao"
+import (
+	"fmt"
+	"github.com/pkg6/go-aiyoudao"
+)
 
 func main() {
-	youdao := gaiyoudao.NewSingleton("appKey", "appSecret")
-	youdao.WBfy("你好", "zh-CHS", "en")
+	youdao := aiyoudao.NewSingleton("appKey", "appSecret")
+	bfy, err := youdao.WBfy("你好", "zh-CHS", "en")
+	fmt.Println(err)
+	fmt.Println(bfy)
 }
