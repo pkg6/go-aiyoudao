@@ -2,9 +2,9 @@ package aiyoudao
 
 import (
 	"context"
+	"fmt"
 	"github.com/google/uuid"
-	"github.com/zzqqw/gclient"
-	"net/url"
+	"github.com/pkg6/go-requests"
 	"strconv"
 	"sync"
 	"time"
@@ -18,9 +18,9 @@ var (
 
 type (
 	Client struct {
-		AppKey     string
-		AppSecret  string
-		HttpClient *gclient.Client
+		AppKey    string
+		AppSecret string
+		Request   *requests.Client
 	}
 )
 
@@ -33,9 +33,9 @@ func NewSingleton(appKey, appSecret string) *Client {
 
 func New(appKey, appSecret string) *Client {
 	return &Client{
-		AppKey:     appKey,
-		AppSecret:  appSecret,
-		HttpClient: gclient.New(),
+		AppKey:    appKey,
+		AppSecret: appSecret,
+		Request:   requests.New(),
 	}
 }
 
@@ -46,7 +46,7 @@ func (c *Client) PostForm(signType, path string, resp any, defaultBody BodyMaps,
 	var sign string
 	switch signType {
 	case "v4":
-		sign = gclient.Sha256String(c.AppKey + salt + curTime + c.AppSecret)
+		sign = requests.Sha256(c.AppKey + salt + curTime + c.AppSecret)
 	case "v3":
 		qs := bodyMaps["q"]
 		if qs == nil {
@@ -65,18 +65,14 @@ func (c *Client) PostForm(signType, path string, resp any, defaultBody BodyMaps,
 				return string(str[:10]) + strconv.Itoa(strLen) + string(str[strLen-10:])
 			}
 		}
-		sign = gclient.Sha256String(c.AppKey + inputFun(q) + salt + curTime + c.AppSecret)
+		sign = requests.Sha256(c.AppKey + inputFun(q) + salt + curTime + c.AppSecret)
 	}
-	params := url.Values{}
-	for k, v := range bodyMaps {
-		for pv := range v {
-			params.Add(k, v[pv])
-		}
-	}
+	params := bodyMaps.UrlValues()
 	params.Add("appKey", c.AppKey)
 	params.Add("salt", salt)
 	params.Add("curtime", curTime)
 	params.Add("signType", signType)
 	params.Add("sign", sign)
-	return c.HttpClient.PostFormUnmarshal(context.Background(), RootURI+path, params, resp)
+	fmt.Println(params)
+	return c.Request.PostFormUnmarshal(context.Background(), RootURI+path, params, resp)
 }
