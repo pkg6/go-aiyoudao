@@ -2,7 +2,6 @@ package aiyoudao
 
 import (
 	"context"
-	"fmt"
 	"github.com/google/uuid"
 	"github.com/pkg6/go-requests"
 	"strconv"
@@ -73,6 +72,5 @@ func (c *Client) PostForm(signType, path string, resp any, defaultBody BodyMaps,
 	params.Add("curtime", curTime)
 	params.Add("signType", signType)
 	params.Add("sign", sign)
-	fmt.Println(params)
 	return c.Request.PostFormUnmarshal(context.Background(), RootURI+path, params, resp)
 }
