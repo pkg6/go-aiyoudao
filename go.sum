@@ -1,8 +1,8 @@
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/google/uuid v1.5.0 h1:1p67kYwdtXjb0gL0BPiP1Av9wiZPo5A8z2cWkTZ+eyU=
 github.com/google/uuid v1.5.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
-github.com/pkg6/go-requests v0.2.1 h1:jyz1RuhKL3L1rd3Ujfyip6LVz554H+UQjmzNEvpwOBA=
-github.com/pkg6/go-requests v0.2.1/go.mod h1:/rcVm8Itd2djtxDVxjRnHURChV86TB4ooZnP+IBZBmg=
+github.com/pkg6/go-requests v0.2.3 h1:IwlH6D1DlIKnBaLccz4dJR75CCoPEw4HD7BST9sD5ko=
+github.com/pkg6/go-requests v0.2.3/go.mod h1:/rcVm8Itd2djtxDVxjRnHURChV86TB4ooZnP+IBZBmg=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/stretchr/testify v1.8.1 h1:w7B6lhMri9wdJUVmEZPGGhZzrYTPvgJArz7wNPgYKsk=
 golang.org/x/net v0.14.0 h1:BONx9s002vGdD9umnlX1Po8vOZmrgH34qlHcD1MfK14=
